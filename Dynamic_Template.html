@@ -9,7 +9,7 @@
 		html,
 		body {
 			background: url('<MCImg_cb-background-android.jpg>') no-repeat;
-            background-position: center;
+			background-position: center;
 			/* needed for container min-height */
 			margin: 0px 0px 0px 0px;
 		}
@@ -55,7 +55,8 @@
 
 		/* The rest of the style is on the orientation style below in the script section */
 		#Main .row ul li {
-			padding: 1px; margin: 1px 3px 1px 0px;
+			padding: 1px;
+			margin: 1px 3px 1px 0px;
 			vertical-align: middle;
 			text-align: center;
 			/*background-color: #FFF;
@@ -138,199 +139,248 @@
 	</div>
 	<script>
 		// The script adds a dynamic nature to the template.
-	// It does this by checking the <MCLink#> tag which Soti's client will change to the string typed into that field, in the lockdown policy.  If the tag isn't changed it knows that there is nothing setup
-	// for that entry.  This allows the HTML to be generated on the fly, based on how many entries there are.  The script houses the orientation css settings since we change those
-	// slightly based on how many entries there are.  This must be done in the JavaScript since the code doesn't have all the needed information, until it has been presented to the client.
-	//
-	// This script gives the ability to setup a Header and a Footer in the Lockdown Policy.  To add a Header simply add a new program, but in the package name put HTML HEADER. 
-	// Or if you want to add a Footer simply put HTML FOOTER.  You can either choose text or an image to put into the header or footer.
-    // Add Header text into the display name field or if an image is set it will always be used instead.
-	//
-	// The script will change the layout based on how many icons are set.  It ignores the HTML tag used for Headers and Footers in the Package name field, so no need to worry about them being counted.
-	// If there are 6 icons or less.  it will create a two row table, otherwise it will use a dynamically flowing layout to fill the white space in-between the header and footer.
-	// This makes the screen look less crowded and utilizes the extra free space for layout.
-	//
-	// The script also automatically uses the correct image file.  If an image has been set in the Image dropdown, in the Lockdown policy, it will use that.
-	// If it there is no image set it will use the exe default icon.
-	var main_row_ul_li_height, main_row_ul_li_img, main_row_ul_li_txt, main_row_ul_li_width, HTMLheader, HTMLfooter, IconCount;
-	var SotiLink = [], SotiImg = [], SotiDisp = [], SotiDispImg = [], SotiExeImg = [];
-	
-	SotiLinkCheck();
-	CSSOrientationSetup();
-	HTMLtablesetup();
-	
-	// The SotiLinkCheck function puts all the <MCXXX#> tags that soti uses into variables to be used later.  This must be done for each tag (instead of using a for loop) because
-	// Soti dynamically changes each tag it finds to whatever was put into the Lockdown Policy.  This change is done BEFORE the client starts processing the code.
-	// Therefore this can not be done with any kind of automation and must be done by hand for each and every tag.  It is assumed that there are no more then 20 entries.
-	// To add more just add more variables below.  This function also looks for and creates the Header and Footer HTML, based on the Soti Lockdown Policy special entry.
-	
-	function SotiLinkCheck() {
-		var Count, SotiValidate;
-		HTMLheader = "";
-		HTMLfooter = "";
-		SotiValidate = 0;
-		Count = 0;
-		IconCount = 0;
-		HeaderCheck = 0;
-		FooterCheck = 0;
-		
-		 SotiLink[0] = "<MCLink0>"; SotiDisp[0] = "<MCDISP0>"; SotiExeImg[0] = "<MCExeIcon0>"; SotiDispImg[0] = "<MCDispImg0>"; SotiLink[1]
-						= "<MCLink1>"; SotiDisp[1] = "<MCDISP1>"; SotiExeImg[1] = "<MCExeIcon1>"; SotiDispImg[1] = "<MCDispImg1>"; SotiLink[2]
-										= "<MCLink2>"; SotiDisp[2] = "<MCDISP2>"; SotiExeImg[2] = "<MCExeIcon2>"; SotiDispImg[2] = "<MCDispImg2>"; SotiLink[3]
-														= "<MCLink3>"; SotiDisp[3] = "<MCDISP3>"; SotiExeImg[3] = "<MCExeIcon3>"; SotiDispImg[3] = "<MCDispImg3>"; SotiLink[4]
-																		= "<MCLink4>"; SotiDisp[4] = "<MCDISP4>"; SotiExeImg[4] = "<MCExeIcon4>"; SotiDispImg[4] = "<MCDispImg4>";
-																						SotiLink[5] = "<MCLink5>"; SotiDisp[5] = "<MCDISP5>"; SotiExeImg[5] = "<MCExeIcon5>"; SotiDispImg[5]
-																									= "<MCDispImg5>"; SotiLink[6] = "<MCLink6>"; SotiDisp[6] = "<MCDISP6>"; SotiExeImg[6] = "<MCExeIcon6>";
-																													SotiDispImg[6] = "<MCDispImg6>"; SotiLink[7] = "<MCLink7>"; SotiDisp[7] = "<MCDISP7>"; SotiExeImg[7]
-																																= "<MCExeIcon7>"; SotiDispImg[7] = "<MCDispImg7>"; SotiLink[8] = "<MCLink8>"; SotiDisp[8] =
-																																			"<MCDISP8>"; SotiExeImg[8] = "<MCExeIcon8>"; SotiDispImg[8] = "<MCDispImg8>"; SotiLink[9]
-																																						= "<MCLink9>"; SotiDisp[9] = "<MCDISP9>"; SotiExeImg[9] = "<MCExeIcon9>"; SotiDispImg[9]
-																																									= "<MCDispImg9>"; SotiLink[10] = "<MCLink10>"; SotiDisp[10] = "<MCDISP10>"; SotiExeImg[10]
-																																												= "<MCExeIcon10>"; SotiDispImg[10] = "<MCDispImg10>"; SotiLink[11] = "<MCLink11>";
-																																															SotiDisp[11] = "<MCDISP11>"; SotiExeImg[11] = "<MCExeIcon11>"; SotiDispImg[11]
-																																																	= "<MCDispImg11>"; SotiLink[12] = "<MCLink12>"; SotiDisp[12] = "<MCDISP12>";
-																																																				SotiExeImg[12] = "<MCExeIcon12>"; SotiDispImg[12] = "<MCDispImg12>"; SotiLink[13]
-																																																						= "<MCLink13>"; SotiDisp[13] = "<MCDISP13>"; SotiExeImg[13] = "<MCExeIcon13>";
-																																																									SotiDispImg[13] = "<MCDispImg13>"; SotiLink[14] = "<MCLink14>"; SotiDisp[14]
-																																																											= "<MCDISP14>"; SotiExeImg[14] = "<MCExeIcon14>"; SotiDispImg[14]
-																																																													= "<MCDispImg14>"; SotiLink[15] = "<MCLink15>"; SotiDisp[15] =
-																																																															"<MCDISP15>"; SotiExeImg[15] = "<MCExeIcon15>"; SotiDispImg[15]
-																																																																	= "<MCDispImg15>"; SotiLink[16] = "<MCLink16>"; SotiDisp[16]
-																																																																			= "<MCDISP16>"; SotiExeImg[16] = "<MCExeIcon16>"; SotiDispImg[16]
-																																																																					= "<MCDispImg16>"; SotiLink[17] = "<MCLink17>"; SotiDisp[17]
-																																																																							= "<MCDISP17>"; SotiExeImg[17] = "<MCExeIcon17>"; SotiDispImg[17]
-																																																																									= "<MCDispImg17>"; SotiLink[18] = "<MCLink18>"; SotiDisp[18]
-																																																																											= "<MCDISP18>"; SotiExeImg[18] = "<MCExeIcon18>";
-																																																																													SotiDispImg[18] = "<MCDispImg18>"; SotiLink[19]
-																																																																														= "<MCLink19>"; SotiDisp[19] = "<MCDISP19>";
-																																																																																SotiExeImg[19] = "<MCExeIcon19>"; SotiDispImg[19]
-																																																																																	= "<MCDispImg19>";
-		
-		for	(index = 0; index < 20; index++) {
-			if (SotiLink[index].split(" ")[0] == "HTML") {
-				switch(SotiLink[index].split(" ")[1]) {
-					case "HEADER":
-						if (SotiDispImg[index] === "") {
-							HTMLheader = "<span class=\"Title\">" + SotiDisp[index] + "</span>" ;
-						} else {
-							HTMLheader = "<img src=\"" + SotiDispImg[index] + "\" />";
-						}
-						HeaderCheck = 1;
-					break;
-					case "FOOTER":
-						if (SotiDispImg[index] === "") {
-							HTMLfooter = "<span class=\"Title\">" + SotiDisp[index] + "</span>";
-						} else {
-							HTMLfooter = "<img src=\"" + SotiDispImg[index] + "\" />";
-						}
-						FooterCheck = 1
-					break;
-				}
-			} else {
-				SotiValidate = SotiLink[index].search("MCLink");
-				if (SotiValidate === -1) {
-					if (SotiDispImg[index] === "") {
-						SotiImg[index] = SotiExeImg[index];
-					} else {
-						SotiImg[index] = SotiDispImg[index];
+		// It does this by checking the <MCLink#> tag which Soti's client will change to the string typed into that field, in the lockdown policy.  If the tag isn't changed it knows that there is nothing setup
+		// for that entry.  This allows the HTML to be generated on the fly, based on how many entries there are.  The script houses the orientation css settings since we change those
+		// slightly based on how many entries there are.  This must be done in the JavaScript since the code doesn't have all the needed information, until it has been presented to the client.
+		//
+		// This script gives the ability to setup a Header and a Footer in the Lockdown Policy.  To add a Header simply add a new program, but in the package name put HTML HEADER. 
+		// Or if you want to add a Footer simply put HTML FOOTER.  You can either choose text or an image to put into the header or footer.
+		// Add Header text into the display name field or if an image is set it will always be used instead.
+		//
+		// The script will change the layout based on how many icons are set.  It ignores the HTML tag used for Headers and Footers in the Package name field, so no need to worry about them being counted.
+		// If there are 6 icons or less.  it will create a two row table, otherwise it will use a dynamically flowing layout to fill the white space in-between the header and footer.
+		// This makes the screen look less crowded and utilizes the extra free space for layout.
+		//
+		// The script also automatically uses the correct image file.  If an image has been set in the Image dropdown, in the Lockdown policy, it will use that.
+		// If it there is no image set it will use the exe default icon.
+		var main_row_ul_li_height, main_row_ul_li_img, main_row_ul_li_txt, main_row_ul_li_width, HTMLheader, HTMLfooter, IconCount;
+		var SotiLink = [], SotiImg = [], SotiDisp = [], SotiDispImg = [], SotiExeImg = [];
+
+		SotiLinkCheck();
+		CSSOrientationSetup();
+		HTMLtablesetup();
+
+		// The SotiLinkCheck function puts all the <MCXXX#> tags that soti uses into variables to be used later.  This must be done for each tag (instead of using a for loop) because
+		// Soti dynamically changes each tag it finds to whatever was put into the Lockdown Policy.  This change is done BEFORE the client starts processing the code.
+		// Therefore this can not be done with any kind of automation and must be done by hand for each and every tag.  It is assumed that there are no more then 20 entries.
+		// To add more just add more variables below.  This function also looks for and creates the Header and Footer HTML, based on the Soti Lockdown Policy special entry.
+
+		function SotiLinkCheck() {
+			var Count, SotiValidate;
+			HTMLheader = "";
+			HTMLfooter = "";
+			SotiValidate = 0;
+			Count = 0;
+			IconCount = 0;
+			HeaderCheck = 0;
+			FooterCheck = 0;
+			SotiLink[0] = "<MCLink0>";
+			SotiDisp[0] = "<MCDISP0>";
+			SotiExeImg[0] = "<MCExeIcon0>";
+			SotiDispImg[0] = "<MCDispImg0>";
+			SotiLink[1] = "<MCLink1>";
+			SotiDisp[1] = "<MCDISP1>";
+			SotiExeImg[1] = "<MCExeIcon1>";
+			SotiDispImg[1] = "<MCDispImg1>";
+			SotiLink[2] = "<MCLink2>";
+			SotiDisp[2] = "<MCDISP2>";
+			SotiExeImg[2] = "<MCExeIcon2>";
+			SotiDispImg[2] = "<MCDispImg2>";
+			SotiLink[3] = "<MCLink3>";
+			SotiDisp[3] = "<MCDISP3>";
+			SotiExeImg[3] = "<MCExeIcon3>";
+			SotiDispImg[3] = "<MCDispImg3>";
+			SotiLink[4] = "<MCLink4>";
+			SotiDisp[4] = "<MCDISP4>";
+			SotiExeImg[4] = "<MCExeIcon4>";
+			SotiDispImg[4] = "<MCDispImg4>";
+			SotiLink[5] = "<MCLink5>";
+			SotiDisp[5] = "<MCDISP5>";
+			SotiExeImg[5] = "<MCExeIcon5>";
+			SotiDispImg[5] = "<MCDispImg5>";
+			SotiLink[6] = "<MCLink6>";
+			SotiDisp[6] = "<MCDISP6>";
+			SotiExeImg[6] = "<MCExeIcon6>";
+			SotiDispImg[6] = "<MCDispImg6>";
+			SotiLink[7] = "<MCLink7>";
+			SotiDisp[7] = "<MCDISP7>";
+			SotiExeImg[7] = "<MCExeIcon7>";
+			SotiDispImg[7] = "<MCDispImg7>";
+			SotiLink[8] = "<MCLink8>";
+			SotiDisp[8] = "<MCDISP8>";
+			SotiExeImg[8] = "<MCExeIcon8>";
+			SotiDispImg[8] = "<MCDispImg8>";
+			SotiLink[9] = "<MCLink9>";
+			SotiDisp[9] = "<MCDISP9>";
+			SotiExeImg[9] = "<MCExeIcon9>";
+			SotiDispImg[9] = "<MCDispImg9>";
+			SotiLink[10] = "<MCLink10>";
+			SotiDisp[10] = "<MCDISP10>";
+			SotiExeImg[10] = "<MCExeIcon10>";
+			SotiDispImg[10] = "<MCDispImg10>";
+			SotiLink[11] = "<MCLink11>";
+			SotiDisp[11] = "<MCDISP11>";
+			SotiExeImg[11] = "<MCExeIcon11>";
+			SotiDispImg[11] = "<MCDispImg11>";
+			SotiLink[12] = "<MCLink12>";
+			SotiDisp[12] = "<MCDISP12>";
+			SotiExeImg[12] = "<MCExeIcon12>";
+			SotiDispImg[12] = "<MCDispImg12>";
+			SotiLink[13] = "<MCLink13>";
+			SotiDisp[13] = "<MCDISP13>";
+			SotiExeImg[13] = "<MCExeIcon13>";
+			SotiDispImg[13] = "<MCDispImg13>";
+			SotiLink[14] = "<MCLink14>";
+			SotiDisp[14] = "<MCDISP14>";
+			SotiExeImg[14] = "<MCExeIcon14>";
+			SotiDispImg[14] = "<MCDispImg14>";
+			SotiLink[15] = "<MCLink15>";
+			SotiDisp[15] = "<MCDISP15>";
+			SotiExeImg[15] = "<MCExeIcon15>";
+			SotiDispImg[15] = "<MCDispImg15>";
+			SotiLink[16] = "<MCLink16>";
+			SotiDisp[16] = "<MCDISP16>";
+			SotiExeImg[16] = "<MCExeIcon16>";
+			SotiDispImg[16] = "<MCDispImg16>";
+			SotiLink[17] = "<MCLink17>";
+			SotiDisp[17] = "<MCDISP17>";
+			SotiExeImg[17] = "<MCExeIcon17>";
+			SotiDispImg[17] = "<MCDispImg17>";
+			SotiLink[18] = "<MCLink18>";
+			SotiDisp[18] = "<MCDISP18>";
+			SotiExeImg[18] = "<MCExeIcon18>";
+			SotiDispImg[18] = "<MCDispImg18>";
+			SotiLink[19] = "<MCLink19>";
+			SotiDisp[19] = "<MCDISP19>";
+			SotiExeImg[19] = "<MCExeIcon19>";
+			SotiDispImg[19] = "<MCDispImg19>";
+
+
+			for (index = 0; index < 20; index++) {
+				if (SotiLink[index].split(" ")[0] == "HTML") {
+					switch (SotiLink[index].split(" ")[1]) {
+						case "HEADER":
+							if (SotiDispImg[index] === "") {
+								HTMLheader = "<span class=\"Title\">" + SotiDisp[index] + "</span>";
+							} else {
+								HTMLheader = "<img src=\"" + SotiDispImg[index] + "\" />";
+							}
+							HeaderCheck = 1;
+							break;
+						case "FOOTER":
+							if (SotiDispImg[index] === "") {
+								HTMLfooter = "<span class=\"Title\">" + SotiDisp[index] + "</span>";
+							} else {
+								HTMLfooter = "<img src=\"" + SotiDispImg[index] + "\" />";
+							}
+							FooterCheck = 1
+							break;
 					}
-					IconCount++;
 				} else {
-					SotiLink.length = index;
-					return;
-				}
-			}
-		}
-	}
-	
-	// This adds CSS code to detect and change the layout depending on the devices current orientation.  It's done here so that the JavaScript can adjust for how many total icons there will be.
-	function CSSOrientationSetup() {
-		var HeaderPortrait, HeaderLandscape, FooterPortrait, FooterLandscape;
-		if (IconCount < 7) {
-			main_row_ul_li_width = "135px";
-			main_row_ul_li_height = "153px";
-			main_row_ul_li_txt = "font: bold 17px arial,sans-serif;";
-			main_row_ul_li_img = "86px";
-		} else {
-			main_row_ul_li_width = "110px";
-			main_row_ul_li_height = "145px";
-			main_row_ul_li_txt = "font: bold 14px arial,sans-serif;";
-			main_row_ul_li_img = "76px";
-		}
-		if (HeaderCheck == 1) {
-			HeaderPortrait = "#Header {height: 60px;} #Header .Title {font: bold 40px arial,sans-serif; line-height: 60px; padding: 0px;}";
-			HeaderLandscape = "#Header {height: 45px;} #Header .Title {font: bold 35px arial,sans-serif; line-height: 45px; padding: 0px;}";
-		} else {
-			HeaderPortrait = "#Header {height: 0px;} #Header .Title {font: bold 0px arial,sans-serif; line-height: 0px; padding: 0px;}";
-			HeaderLandscape = "#Header {height: 0px;} #Header .Title {font: bold 0px arial,sans-serif; line-height: 0px; padding: 0px;}";
-		}
-		if (FooterCheck == 1) {
-			FooterPortrait = "#Footer {height: 50px;} #Footer .Title {font: bold 30px arial,sans-serif; line-height: 50px; padding: 0px;}";
-			FooterLandscape = "#Footer {height: 35px;} #Footer .Title {font: bold 25px arial,sans-serif; line-height: 35px; padding: 0px;}";
-		} else {
-			FooterPortrait = "#Footer {height: 0px;} #Footer .Title {font: bold 0px arial,sans-serif; line-height: 0px; padding: 0px;}";
-			FooterLandscape = "#Footer {height: 0px;} #Footer .Title {font: bold 0px arial,sans-serif; line-height: 0px; padding: 0px;}";
-		}
-		if (HeaderCheck == 1) {
-			if (FooterCheck == 1) {
-				PaddingPortrait = "#Main {text-align:center; padding: 75px 0px 55px 0px;}";
-				PaddingLandscape = "#Main {padding: 45px 0px 30px 0px;}";
-			} else {
-				PaddingPortrait = "#Main {text-align:center; padding: 75px 0px 0px 0px;}";
-				PaddingLandscape = "#Main {padding: 45px 0px 0px 0px;}";
-			}
-		} else {
-			if (FooterCheck == 1) {
-				PaddingPortrait = "#Main {text-align:center; padding: 0px 0px 55px 0px;}";
-				PaddingLandscape = "#Main {padding: 0px 0px 30px 0px;}";
-			} else {
-				PaddingPortrait = "#Main {text-align:center; padding: 0px 0px 0px 0px;}";
-				PaddingLandscape = "#Main {padding: 0px 0px 0px 0px;}";
-			}
-		}
-		try {
-			var sheet = document.styleSheets[0];
-			sheet.insertRule("@media screen and (orientation:portrait){#portraitContent {display: block;} #landscapeContent {display: none;} " + HeaderPortrait + " " + PaddingPortrait + " #Main .row ul li {width: " + main_row_ul_li_width + "; height: " + main_row_ul_li_height + ";} #Main .row ul li img {width: " + main_row_ul_li_img + "; height: " + main_row_ul_li_img + "; padding: 12px;} #Main .row ul li .txt {" + main_row_ul_li_txt + ";} " + FooterPortrait + " }");
-			sheet.insertRule("@media screen and (orientation:landscape){#portraitContent {display: none;} #landscapeContent {display: block;} " + HeaderLandscape + " " + PaddingLandscape + " #Main .row ul li {width: 115px; height: 110px;} #Main .row ul li img {width: 76px; height: 76px; padding: 6px;} #Main .row ul li .txt {font: bold 15px arial,sans-serif;} " + FooterLandscape + " }");
-		} catch (err) {
-			alert(err.message);
-		}
-	}
-	
-	// HTMLtablesetup dynamically creates the HTML code and inserts it into the DOMM using the tags in the static HTML code.
-	// This is where the alternate table layouts are created depending on how many entries there are.
-	function HTMLtablesetup() {
-		var counter;
-		counter = 0;
-		TableHTML = "<div id=\"Main\"> <div class=\"row\"> <ul>";
-		for	(index = 0; index < SotiLink.length; index++) {
-			if (SotiLink[index].split(" ")[0] != "HTML") {
-				TableHTML += "<li><a href =\"" + SotiLink[index] + "\"><img src=\"" + SotiImg[index] + "\"/><div class=\"txt\">" + SotiDisp[index] + "</div></a></li>";
-			}
-		}
-		TableHTML += "</ul></div></div>";
-		if (IconCount < 7) {
-			AltPortraitHTML = "<div id=\"Main\"> <div class=\"row\"> <ul>";
-			for	(index = 0; index < SotiLink.length; index++) {
-				if (SotiLink[index].split(" ")[0] != "HTML") {
-					if (counter % 2 === 0) {
-						AltPortraitHTML += "</ul></div><div class=\"row\"><ul>";
+					SotiValidate = SotiLink[index].search("MCLink");
+					if (SotiValidate === -1) {
+						if (SotiDispImg[index] === "") {
+							SotiImg[index] = SotiExeImg[index];
+						} else {
+							SotiImg[index] = SotiDispImg[index];
+						}
+						IconCount++;
+					} else {
+						SotiLink.length = index;
+						return;
 					}
-					AltPortraitHTML += "<li><a href =\"" + SotiLink[index] + "\"><img src=\"" + SotiImg[index] + "\"/><div class=\"txt\">" + SotiDisp[index] + "</div></a></li>";	
-					counter++;
 				}
 			}
-			AltPortraitHTML += "</ul></div></div>";
-			document.getElementById("portraitContent").innerHTML = AltPortraitHTML;
-		} else {
-			document.getElementById("portraitContent").innerHTML = TableHTML;
 		}
-		document.getElementById("landscapeContent").innerHTML = TableHTML;
-		document.getElementById("Header").innerHTML = HTMLheader;
-		document.getElementById("Footer").innerHTML = HTMLfooter;
-		
-		return;
-	}
+
+		// This adds CSS code to detect and change the layout depending on the devices current orientation.  It's done here so that the JavaScript can adjust for how many total icons there will be.
+		function CSSOrientationSetup() {
+			var HeaderPortrait, HeaderLandscape, FooterPortrait, FooterLandscape;
+			if (IconCount < 7) {
+				main_row_ul_li_width = "135px";
+				main_row_ul_li_height = "153px";
+				main_row_ul_li_txt = "font: bold 17px arial,sans-serif;";
+				main_row_ul_li_img = "86px";
+			} else {
+				main_row_ul_li_width = "110px";
+				main_row_ul_li_height = "145px";
+				main_row_ul_li_txt = "font: bold 14px arial,sans-serif;";
+				main_row_ul_li_img = "76px";
+			}
+			if (HeaderCheck == 1) {
+				HeaderPortrait = "#Header {height: 60px;} #Header .Title {font: bold 40px arial,sans-serif; line-height: 60px; padding: 0px;}";
+				HeaderLandscape = "#Header {height: 45px;} #Header .Title {font: bold 35px arial,sans-serif; line-height: 45px; padding: 0px;}";
+			} else {
+				HeaderPortrait = "#Header {height: 0px;} #Header .Title {font: bold 0px arial,sans-serif; line-height: 0px; padding: 0px;}";
+				HeaderLandscape = "#Header {height: 0px;} #Header .Title {font: bold 0px arial,sans-serif; line-height: 0px; padding: 0px;}";
+			}
+			if (FooterCheck == 1) {
+				FooterPortrait = "#Footer {height: 50px;} #Footer .Title {font: bold 30px arial,sans-serif; line-height: 50px; padding: 0px;}";
+				FooterLandscape = "#Footer {height: 35px;} #Footer .Title {font: bold 25px arial,sans-serif; line-height: 35px; padding: 0px;}";
+			} else {
+				FooterPortrait = "#Footer {height: 0px;} #Footer .Title {font: bold 0px arial,sans-serif; line-height: 0px; padding: 0px;}";
+				FooterLandscape = "#Footer {height: 0px;} #Footer .Title {font: bold 0px arial,sans-serif; line-height: 0px; padding: 0px;}";
+			}
+			if (HeaderCheck == 1) {
+				if (FooterCheck == 1) {
+					PaddingPortrait = "#Main {text-align:center; padding: 75px 0px 55px 0px;}";
+					PaddingLandscape = "#Main {padding: 45px 0px 30px 0px;}";
+				} else {
+					PaddingPortrait = "#Main {text-align:center; padding: 75px 0px 0px 0px;}";
+					PaddingLandscape = "#Main {padding: 45px 0px 0px 0px;}";
+				}
+			} else {
+				if (FooterCheck == 1) {
+					PaddingPortrait = "#Main {text-align:center; padding: 0px 0px 55px 0px;}";
+					PaddingLandscape = "#Main {padding: 0px 0px 30px 0px;}";
+				} else {
+					PaddingPortrait = "#Main {text-align:center; padding: 0px 0px 0px 0px;}";
+					PaddingLandscape = "#Main {padding: 0px 0px 0px 0px;}";
+				}
+			}
+			try {
+				var sheet = document.styleSheets[0];
+				sheet.insertRule("@media screen and (orientation:portrait){#portraitContent {display: block;} #landscapeContent {display: none;} " + HeaderPortrait + " " + PaddingPortrait + " #Main .row ul li {width: " + main_row_ul_li_width + "; height: " + main_row_ul_li_height + ";} #Main .row ul li img {width: " + main_row_ul_li_img + "; height: " + main_row_ul_li_img + "; padding: 12px;} #Main .row ul li .txt {" + main_row_ul_li_txt + ";} " + FooterPortrait + " }");
+				sheet.insertRule("@media screen and (orientation:landscape){#portraitContent {display: none;} #landscapeContent {display: block;} " + HeaderLandscape + " " + PaddingLandscape + " #Main .row ul li {width: 115px; height: 110px;} #Main .row ul li img {width: 76px; height: 76px; padding: 6px;} #Main .row ul li .txt {font: bold 15px arial,sans-serif;} " + FooterLandscape + " }");
+			} catch (err) {
+				alert(err.message);
+			}
+		}
+
+		// HTMLtablesetup dynamically creates the HTML code and inserts it into the DOMM using the tags in the static HTML code.
+		// This is where the alternate table layouts are created depending on how many entries there are.
+		function HTMLtablesetup() {
+			var counter;
+			counter = 0;
+			TableHTML = "<div id=\"Main\"> <div class=\"row\"> <ul>";
+			for (index = 0; index < SotiLink.length; index++) {
+				if (SotiLink[index].split(" ")[0] != "HTML") {
+					TableHTML += "<li><a href =\"" + SotiLink[index] + "\"><img src=\"" + SotiImg[index] + "\"/><div class=\"txt\">" + SotiDisp[index] + "</div></a></li>";
+				}
+			}
+			TableHTML += "</ul></div></div>";
+			if (IconCount < 7) {
+				AltPortraitHTML = "<div id=\"Main\"> <div class=\"row\"> <ul>";
+				for (index = 0; index < SotiLink.length; index++) {
+					if (SotiLink[index].split(" ")[0] != "HTML") {
+						if (counter % 2 === 0) {
+							AltPortraitHTML += "</ul></div><div class=\"row\"><ul>";
+						}
+						AltPortraitHTML += "<li><a href =\"" + SotiLink[index] + "\"><img src=\"" + SotiImg[index] + "\"/><div class=\"txt\">" + SotiDisp[index] + "</div></a></li>";
+						counter++;
+					}
+				}
+				AltPortraitHTML += "</ul></div></div>";
+				document.getElementById("portraitContent").innerHTML = AltPortraitHTML;
+			} else {
+				document.getElementById("portraitContent").innerHTML = TableHTML;
+			}
+			document.getElementById("landscapeContent").innerHTML = TableHTML;
+			document.getElementById("Header").innerHTML = HTMLheader;
+			document.getElementById("Footer").innerHTML = HTMLfooter;
+
+			return;
+		}
 
 	</script>
 </body>
